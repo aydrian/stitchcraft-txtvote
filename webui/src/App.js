@@ -5,7 +5,8 @@ import {
   RemoteMongoClient
 } from 'mongodb-stitch-browser-sdk'
 import { ObjectId } from 'bson'
-import { Container, Card, Image, Header } from 'semantic-ui-react'
+import { Container, Card, Image, Header, Button, Icon } from 'semantic-ui-react'
+const seconds = m => m * 1000
 
 class App extends Component {
   constructor(props) {
@@ -17,8 +18,12 @@ class App extends Component {
     this.state = {
       contest: {
         entries: []
-      }
+      },
+      refresh: true
     }
+
+    this.intervalRef = null
+    this.toggleRefresh = this.toggleRefresh.bind(this)
   }
 
   componentDidMount() {
@@ -28,16 +33,11 @@ class App extends Component {
       RemoteMongoClient.factory,
       'mongodb-atlas'
     )
-    this.mongodb
-      .db('data')
-      .collection('contests')
-      .find({ _id: this.contest_id })
-      .asArray()
-      .then(results => {
-        this.setState({ contest: results[0] })
-      })
 
-    this.mongodb
+    this.fetchContest()
+    this.initTimer()
+
+    /*this.mongodb
       .db('data')
       .collection('contests')
       .watch([this.contest_id])
@@ -52,7 +52,43 @@ class App extends Component {
       .catch(err => {
         console.log('In the catch')
         console.log(err)
+      })*/
+  }
+
+  componentWillUnmount() {
+    this.cancelTimer()
+  }
+
+  fetchContest() {
+    console.log('Fetching Contest...')
+    this.mongodb
+      .db('data')
+      .collection('contests')
+      .find({ _id: this.contest_id })
+      .asArray()
+      .then(results => {
+        this.setState({ contest: results[0] })
       })
+  }
+
+  initTimer() {
+    this.intervalRef = setInterval(this.fetchContest.bind(this), seconds(5))
+  }
+
+  cancelTimer() {
+    if (this.intervalRef) {
+      clearInterval(this.intervalRef)
+    }
+  }
+
+  toggleRefresh() {
+    if (this.state.refresh) {
+      this.setState({ refresh: false })
+      this.cancelTimer()
+    } else {
+      this.setState({ refresh: true })
+      this.initTimer()
+    }
   }
 
   render() {
@@ -76,6 +112,16 @@ class App extends Component {
         <Header as="h1" textAlign="center" block>
           {this.state.contest.name}
         </Header>
+        <Button
+          toggle
+          active={this.state.refresh}
+          onClick={this.toggleRefresh}
+          size="mini"
+          compact
+        >
+          <Icon name="refresh" />
+          Auto-Refresh
+        </Button>
         {entries.length && (
           <Card.Group centered itemsPerRow="5">
             {entries.map(entry => {
