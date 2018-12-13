@@ -12,7 +12,7 @@ class App extends Component {
   constructor(props) {
     super(props)
 
-    this.appId = 'stitchcraft-test-yxsvi'
+    this.appId = 'stitchcraft-txtvote-xlhrw'
     this.contest_id = new ObjectId('5c0eb1151c9d440000212c19')
 
     this.state = {
@@ -119,7 +119,7 @@ class App extends Component {
           size="mini"
           compact
         >
-          <Icon name="refresh" />
+          <Icon name="refresh" loading={this.state.refresh} />
           Auto-Refresh
         </Button>
         {entries.length && (
