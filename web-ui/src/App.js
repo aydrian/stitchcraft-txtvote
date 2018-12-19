@@ -112,6 +112,10 @@ class App extends Component {
         <Header as="h1" textAlign="center" block>
           {this.state.contest.name}
         </Header>
+        <Header as="h2" textAlign="center">
+          To Vote: Text the name of the entry to{' '}
+          <pre style={{ display: 'inline' }}>516-830-4402</pre>.
+        </Header>
         <Button
           toggle
           active={this.state.refresh}
@@ -122,7 +126,7 @@ class App extends Component {
           <Icon name="refresh" loading={this.state.refresh} />
           Auto-Refresh
         </Button>
-        {entries.length && (
+        {entries.length > 0 ? (
           <Card.Group centered itemsPerRow="5">
             {entries.map(entry => {
               return (
@@ -142,6 +146,10 @@ class App extends Component {
               )
             })}
           </Card.Group>
+        ) : (
+          <Header as="h3" textAlign="center">
+            No Entries
+          </Header>
         )}
       </Container>
     )
