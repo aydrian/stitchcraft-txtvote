@@ -1,0 +1,11 @@
+{
+    "config_version": 20180301,
+    "name": "stitchcraft-txtvote",
+    "location": "US-VA",
+    "deployment_model": "GLOBAL",
+    "security": {},
+    "hosting": {
+        "enabled": true,
+        "app_default_domain": "stitchcraft-txtvote-xlhrw.mongodbstitch.com"
+    }
+}
