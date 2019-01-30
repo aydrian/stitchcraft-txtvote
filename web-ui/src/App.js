@@ -5,8 +5,15 @@ import {
   RemoteMongoClient
 } from 'mongodb-stitch-browser-sdk'
 import { ObjectId } from 'bson'
-import { Container, Card, Image, Header, Button, Icon } from 'semantic-ui-react'
-const seconds = m => m * 1000
+import { Container, Card, Image, Header, Button } from 'semantic-ui-react'
+
+const githubButtonStyle = {
+  position: 'fixed',
+  margin: '1em',
+  top: 0,
+  right: 0,
+  zIndex: 6
+}
 
 class App extends Component {
   constructor(props) {
@@ -18,12 +25,8 @@ class App extends Component {
     this.state = {
       contest: {
         entries: []
-      },
-      refresh: true
+      }
     }
-
-    this.intervalRef = null
-    this.toggleRefresh = this.toggleRefresh.bind(this)
   }
 
   componentDidMount() {
@@ -35,32 +38,20 @@ class App extends Component {
     )
 
     this.fetchContest()
-    this.initTimer()
 
-    /*this.mongodb
+    this.mongodb
       .db('data')
       .collection('contests')
       .watch([this.contest_id])
       .then(stream => {
-        console.log('Resolving watch')
-        console.log(stream)
         stream.onNext(e => {
-          console.log('Watch update', e.fullDocument)
           this.setState({ contest: e.fullDocument })
         })
       })
-      .catch(err => {
-        console.log('In the catch')
-        console.log(err)
-      })*/
-  }
-
-  componentWillUnmount() {
-    this.cancelTimer()
+      .catch(err => console.error)
   }
 
   fetchContest() {
-    console.log('Fetching Contest...')
     this.mongodb
       .db('data')
       .collection('contests')
@@ -71,28 +62,7 @@ class App extends Component {
       })
   }
 
-  initTimer() {
-    this.intervalRef = setInterval(this.fetchContest.bind(this), seconds(5))
-  }
-
-  cancelTimer() {
-    if (this.intervalRef) {
-      clearInterval(this.intervalRef)
-    }
-  }
-
-  toggleRefresh() {
-    if (this.state.refresh) {
-      this.setState({ refresh: false })
-      this.cancelTimer()
-    } else {
-      this.setState({ refresh: true })
-      this.initTimer()
-    }
-  }
-
   render() {
-    console.log(this.state)
     const { entries } = this.state.contest
     return (
       <Container>
@@ -116,16 +86,6 @@ class App extends Component {
           To Vote: Text the name of the entry to{' '}
           <pre style={{ display: 'inline' }}>516-830-4402</pre>.
         </Header>
-        <Button
-          toggle
-          active={this.state.refresh}
-          onClick={this.toggleRefresh}
-          size="mini"
-          compact
-        >
-          <Icon name="refresh" loading={this.state.refresh} />
-          Auto-Refresh
-        </Button>
         {entries.length > 0 ? (
           <Card.Group centered itemsPerRow="5">
             {entries.map(entry => {
@@ -151,6 +111,16 @@ class App extends Component {
             No Entries
           </Header>
         )}
+        <div style={githubButtonStyle}>
+          <Button
+            as="a"
+            href={`https://github.com/aydrian/stitchcraft-txtvote/`}
+            icon="github"
+            content="Source"
+            secondary
+            target="_blank"
+          />
+        </div>
       </Container>
     )
   }
