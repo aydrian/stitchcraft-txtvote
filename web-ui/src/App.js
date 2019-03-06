@@ -5,7 +5,9 @@ import {
   RemoteMongoClient
 } from 'mongodb-stitch-browser-sdk'
 import { ObjectId } from 'bson'
-import { Container, Card, Image, Header, Button } from 'semantic-ui-react'
+import { Container, Header, Button } from 'semantic-ui-react'
+
+import Entries from './components/Entries'
 
 const githubButtonStyle = {
   position: 'fixed',
@@ -87,25 +89,7 @@ class App extends Component {
           <pre style={{ display: 'inline' }}>516-830-4402</pre>.
         </Header>
         {entries.length > 0 ? (
-          <Card.Group centered itemsPerRow="5">
-            {entries.map(entry => {
-              return (
-                <Card key={entry.key}>
-                  <Image
-                    src={`http://${
-                      entry.image.bucket
-                    }.s3.amazonaws.com/${encodeURIComponent(entry.image.key)}`}
-                  />
-                  <Card.Content>
-                    <Card.Header>{entry.key}</Card.Header>
-                  </Card.Content>
-                  <Card.Content extra>
-                    {entry.votes.length || 0} Votes
-                  </Card.Content>
-                </Card>
-              )
-            })}
-          </Card.Group>
+          <Entries entries={entries} />
         ) : (
           <Header as="h3" textAlign="center">
             No Entries
